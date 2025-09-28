@@ -1,57 +1,34 @@
 .data
-    msg1:  .asciiz "\nDigite a Base Maior: "
-    msg2: .asciiz "\nDigite a Base Menor: "
-    msg3:   .asciiz "\nDigite a Altura: "
-    msg4:  .asciiz "\nArea Total:"
+salario: .asciiz "Digite o seu salário: "
+novo_salario: .asciiz "O novo salário será: "
+
 .text
+.globl main
+
 main:
-    # Base Maior
+    # Ler salario
     li $v0, 4
-    la $a0, msg1
+    la $a0, salario
     syscall
 
     li $v0, 5
     syscall
-    move $t0, $v0        
+    move $t0, $v0 
 
-    # Base menor
+    # calcular novo salario
+    mul $t1,$t0,25 
+    div $t2,$t1,100 
+    add $t3,$t2,$t0
+
+    # Exibir o resultado
     li $v0, 4
-    la $a0, msg2
-    syscall
-
-    li $v0, 5
-    syscall
-    move $t1, $v0       
-
-    # Altura
-    li $v0, 4
-    la $a0, msg3
-    syscall
-
-    li $v0, 5
-    syscall
-    move $t2, $v0       
-
-  # Soma das bases
-    add $t3, $t0, $t1      # $t3 = base_maior + base_menor
-
-    # Multiplica pela altura
-    mul $t4, $t3, $t2      # $t4 = (base_maior + base_menor) * altura
-
-    # Divide por 2 (divisão inteira)
-    li $t5, 2
-    div $t4, $t5
-    mflo $t6       
-
-    # Exibe Area total
-    li $v0, 4
-    la $a0, msg4
+    la $a0, novo_salario
     syscall
 
     li $v0, 1
-    move $a0, $t6
+    move $a0, $t3
     syscall
 
-
+    # Fim
     li $v0, 10
     syscall

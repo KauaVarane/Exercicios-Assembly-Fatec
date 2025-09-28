@@ -1,69 +1,59 @@
 .data
-    msg1:  .asciiz "\nHoras normais trabalhadas: "
-    msg2: .asciiz "\nHoras extras trabalhadas: "
-    msg3:   .asciiz "\nValor do desconto: "
-    msg4:  .asciiz "\nSalario bruto:"
-    msg5:    .asciiz "\nSalario liquido: R$"
+msg1: .asciiz "Digite o primeiro valor: "
+msg2: .asciiz "Digite o segundo valor: "
+msg3: .asciiz "Valor do primeiro registrador apos a troca: "
+msg4: .asciiz "Valor do segundo registrador apos a troca: "
 
 .text
+.globl main
+
 main:
-    # horas normais
+    # Lê o primeiro valor
     li $v0, 4
     la $a0, msg1
     syscall
 
     li $v0, 5
     syscall
-    move $t0, $v0        
+    move $t0, $v0   
 
-    # horas extras
+    # Lê o segundo valor
     li $v0, 4
     la $a0, msg2
     syscall
 
     li $v0, 5
     syscall
-    move $t1, $v0       
+    move $t1, $v0  
 
-    # desconto
+    # Troca os valores
+    move $t2, $t0  
+    move $t0, $t1  
+    move $t1, $t2   
+
+    # Mostra o novo valor do primeiro registrador
     li $v0, 4
     la $a0, msg3
     syscall
 
-    li $v0, 5
+    li $v0, 1
+    move $a0, $t0
     syscall
-    move $t2, $v0       
 
-    # Calcula salário bruto
-    li $t3, 10
-    mul $t3, $t3, $t0   
+    # Pula uma linha 
+    li $v0, 11
+    li $a0, 10    
+    syscall
 
-    li $t4, 15
-    mul $t4, $t4, $t1    
-
-    add $t5, $t3, $t4    
-
-    # Calcula salário líquido
-    sub $t6, $t5, $t2    
-
-    # Exibe salário bruto
+    # Mostra o novo valor 
     li $v0, 4
     la $a0, msg4
     syscall
 
     li $v0, 1
-    move $a0, $t5
+    move $a0, $t1
     syscall
 
-    # Exibe salário líquido
-    li $v0, 4
-    la $a0, msg5
-    syscall
-
-    li $v0, 1
-    move $a0, $t6
-    syscall
-
-
+    # Fim
     li $v0, 10
     syscall
