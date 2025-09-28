@@ -1,85 +1,63 @@
 .data
-    msg1: .asciiz "Digite um número entre 100 e 999: "
-    msg_invalido: .asciiz "Número fora do intervalo!\n"
-    msg_centena: .asciiz "CENTENA = "
-    msg_dezena:  .asciiz "DEZENA = "
-    msg_unidade: .asciiz "UNIDADE = "
+    msg1: .asciiz "\nDigite o primeiro número: "
+    msg2: .asciiz "\nDigite o segundo número: "
+    resultado: .asciiz "\nSoma dos ímpares entre eles: "
 
 .text
-.globl main
-
 main:
-    # Solicita o número
+    # Lê primeiro número
     li $v0, 4
     la $a0, msg1
     syscall
-
     li $v0, 5
     syscall
-    move $t0, $v0   # $t0 = número digitado
+    move $t0, $v0    
 
-    # Verifica se $t0 < 100
-    li $t1, 100
-    blt $t0, $t1, invalido
-
-    # Verifica se $t0 > 999
-    li $t1, 999
-    bgt $t0, $t1, invalido
-
-    # CENTENA = numero / 100
-    li $t1, 100
-    div $t0, $t1
-    mflo $t2           # $t2 = centena
-
-    # Resto da divisão por 100 (para pegar dezena e unidade)
-    mfhi $t3           # $t3 = resto
-
-    # DEZENA = resto / 10
-    li $t1, 10
-    div $t3, $t1
-    mflo $t4           # $t4 = dezena
-    mfhi $t5           # $t5 = unidade
-
-    # Imprimir centena
+    # Lê segundo número
     li $v0, 4
-    la $a0, msg_centena
+    la $a0, msg2
     syscall
-    li $v0, 1
-    move $a0, $t2
+    li $v0, 5
     syscall
-    li $v0, 11
-    li $a0, 10       # '\n'
+    move $t1, $v0
+
+    # Descobre maior e menor
+    bgt $t0, $t1, troca
+    move $t2, $t0     
+    move $t3, $t1    
+    j inicio_loop
+
+troca:
+    move $t2, $t1     
+    move $t3, $t0   
+
+inicio_loop:
+    addi $t2, $t2, 1     
+    li $t4, 0             
+
+loop:
+    bge $t2, $t3, fim     
+
+    # Verifica se é ímpar
+    andi $t5, $t2, 1
+    beq $t5, 0, nao_impar
+
+    # Se for ímpar, soma
+    add $t4, $t4, $t2
+
+nao_impar:
+    addi $t2, $t2, 1
+    j loop
+
+fim:
+    # Imprime resultado
+    li $v0, 4
+    la $a0, resultado
     syscall
 
-    # Imprimir dezena
-    li $v0, 4
-    la $a0, msg_dezena
-    syscall
     li $v0, 1
     move $a0, $t4
     syscall
-    li $v0, 11
-    li $a0, 10       # '\n'
-    syscall
 
-    # Imprimir unidade
-    li $v0, 4
-    la $a0, msg_unidade
-    syscall
-    li $v0, 1
-    move $a0, $t5
-    syscall
-    li $v0, 11
-    li $a0, 10       # '\n'
-    syscall
-
-    j fim
-
-invalido:
-    li $v0, 4
-    la $a0, msg_invalido
-    syscall
-
-fim:
     li $v0, 10
     syscall

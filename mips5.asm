@@ -1,77 +1,71 @@
 .data
-     n1:.asciiz "\nDigite um número:"
-     n2:.asciiz "\nDigite outro número:"
-     iguais:.asciiz "\nOs número são iguais:"
-     maior:.asciiz "\nMaior:"
-     menor:.asciiz "\nMenor:"
-    
+    msg: .asciiz "\nDigite um número positivo: "
+    msg_maior: .asciiz "\nMaior valor: "
+    msg_menor: .asciiz "\nMenor valor: "
+
 .text
 main:
-    # Solicita n1
+    li $t0, 0          
+    li $t1, 0          
+
+loop:
+    beq $t0, 10, fim   
+
+    # Solicita número
     li $v0, 4
-    la $a0, n1
+    la $a0, msg
     syscall
-    li $v0, 5
-    syscall
-    move $t0, $v0   
 
-    # Solicita n2
+    li $v0, 5         
+    syscall
+    move $t2, $v0      
+
+    blt $t2, 0, loop   
+
+    # Se for o primeiro número positivo
+    beq $t1, 0, primeiro_valido
+
+    # Verifica maior
+    bgt $t2, $t3, atualiza_maior
+
+verifica_menor:
+    blt $t2, $t4, atualiza_menor
+    j conta
+
+atualiza_maior:
+    move $t3, $t2      
+    j verifica_menor
+
+atualiza_menor:
+    move $t4, $t2      
+    j conta
+
+primeiro_valido:
+    move $t3, $t2   
+    move $t4, $t2  
+    li $t1, 1        
+
+conta:
+    addi $t0, $t0, 1  
+    j loop
+
+fim:
+    # Exibe maior
     li $v0, 4
-    la $a0, n2
+    la $a0, msg_maior
     syscall
-    li $v0, 5
-    syscall
-    move $t1, $v0   
-
-    # se n1 == n2
-    beq $t1,$t0,n1_n2_igual
-    # se n1 > n2 
-    bgt $t0,$t1,n1_maior
-    # se n2 > n1
-
-    li $v0, 4
-    la $a0, maior
-    syscall
-
     li $v0, 1
-    move $a0, $t1
-    syscall
-    
-     li $v0, 4
-    la $a0, menor
+    move $a0, $t3
     syscall
 
-    li $v0, 1
-    move $a0, $t0
-    syscall
-    j fimse 
-n1_n2_igual:
+    # Exibe menor
     li $v0, 4
-    la $a0, iguais
+    la $a0, msg_menor
     syscall
-    j fimse
-    
-   
-n1_maior:
-
-    li $v0, 4
-    la $a0, maior
-    syscall
-
     li $v0, 1
-    move $a0, $t0
-    syscall
-    
-     li $v0, 4
-    la $a0, menor
+    move $a0, $t4
     syscall
 
-    li $v0, 1
-    move $a0, $t1
+    # Finaliza
+    li $v0, 10
     syscall
-    j fimse 
-
- fimse:     
-    
-      
-          
